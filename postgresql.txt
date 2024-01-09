@@ -1,0 +1,30 @@
+-- Create a composite type
+CREATE TYPE address_type AS (
+    street VARCHAR(100),
+    city VARCHAR(50),
+    postal_code VARCHAR(10)
+);
+
+-- Create a table with a column of the composite type
+CREATE TABLE person (
+    person_id SERIAL PRIMARY KEY,
+    full_name VARCHAR(100),
+    home_address address_type
+);
+
+-- Insert data
+INSERT INTO person (full_name, home_address) VALUES 
+('John Doe', ('123 Main St', 'Cityville', '12345'));
+
+
+#DEUXIEME 
+
+CREATE TABLE person (
+    person_id SERIAL PRIMARY KEY,
+    full_name VARCHAR(100),
+    address JSONB
+);
+
+-- Insert data
+INSERT INTO person (full_name, address) VALUES 
+('John Doe', '{"street": "123 Main St", "city": "Cityville", "postal_code": "12345"}'::JSONB);
