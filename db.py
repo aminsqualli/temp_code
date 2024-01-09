@@ -20,8 +20,7 @@ table2 = '3Hshsh_theta'
 view_query = f'''
 CREATE VIEW combined_view AS
 SELECT t1.*, t2.*,
-       t1."Date" AS Date_{table1},
-       t2."Date" AS Date_{table2}
+       t1."Date" AS combined_date
 FROM "{table1}" t1
 FULL OUTER JOIN "{table2}" t2 ON t1."Date" = t2."Date"
 ORDER BY COALESCE(t1."Date", t2."Date");
