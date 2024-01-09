@@ -16,10 +16,12 @@ cur = conn.cursor()
 table1 = '3I_theta'
 table2 = '3Hshsh_theta'
 
-# Create the view
+# Create the view with column aliasing
 view_query = f'''
 CREATE VIEW combined_view AS
-SELECT t1.*, t2.*
+SELECT t1.*, t2.*,
+       t1.date_column AS date_column_{table1},
+       t2.date_column AS date_column_{table2}
 FROM "{table1}" t1
 FULL OUTER JOIN "{table2}" t2 ON t1.date_column = t2.date_column
 ORDER BY COALESCE(t1.date_column, t2.date_column);
