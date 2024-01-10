@@ -19,9 +19,8 @@ prob = LpProblem("CubeCutting", LpMinimize)
 # Create continuous variables for each cube and each box
 x = LpVariable.dicts("UseCube", [(cube.name, i) for cube in cubes for i in range(1, len(box_volumes) + 1)], lowBound=0, cat='Continuous')
 
-# Objective function: Minimize the total number of cubes used, then minimize the total volume of cut pieces
-prob += lpSum(x[(cube.name, i)] for cube in cubes for i in range(1, len(box_volumes) + 1)), "Total Cubes Used"
-prob += lpSum(x[(cube.name, i)] * (cube.volume - cube.volume // 1) for cube in cubes for i in range(1, len(box_volumes) + 1)), "Total Volume of Cut Pieces"
+# Objective function: Minimize the total volume of cubes used
+prob += lpSum(x[(cube.name, i)] for cube in cubes for i in range(1, len(box_volumes) + 1)), "Total Volume Used"
 
 # Constraints: The total volume of cubes in each box is within the box's volume ± tolerance
 for i, box_volume in enumerate(box_volumes):
