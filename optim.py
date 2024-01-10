@@ -35,7 +35,9 @@ if LpStatus[prob.status] == "Infeasible":
     print("The problem is infeasible. Adjust constraints or tolerance values.")
 else:
     # Extract the solution
-    selected_cubes = [(cube.name, i) for cube in cubes for i in range(1, len(box_volumes) + 1) if x[(cube.name, i)].value() > 0]
+    selected_cubes = [(cube.name, i, x[(cube.name, i)].value()) for cube in cubes for i in range(1, len(box_volumes) + 1) if x[(cube.name, i)].value() > 0]
 
-    # Print the selected cubes
-    print("Selected Cubes:", selected_cubes)
+    # Print the selected cubes and their fractional use
+    print("Selected Cubes and Their Fractional Use:")
+    for cube_name, box_number, fractional_use in selected_cubes:
+        print(f"Cube {cube_name} in Box {box_number} with fractional use {fractional_use}")
