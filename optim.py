@@ -16,28 +16,29 @@ cubes = [Cube(name, volume) for name, volume in cubes_data.items()]
 # Create the ILP problem
 prob = LpProblem("CubeCutting", LpMinimize)
 
-# Create binary variables for each cube and each box
-x = LpVariable.dicts("Cut", [(cube.name, i) for cube in cubes for i in range(1, len(box_volumes) + 1)], cat='Binary')
+# Create binary variables for each cube, whether it is used and whether it is cut
+x = LpVariable.dicts("UseCube", [cube.name for cube in cubes], cat='Binary')
+y = LpVariable.dicts("CutCube", [cube.name for cube in cubes], cat='Binary')
 
-# Objective function: Minimize the total number of cuts
-prob += lpSum(x[(cube.name, i)] for cube in cubes for i in range(1, len(box_volumes) + 1)), "Total Cuts"
+# Objective function: Minimize the total number of cubes used and cut
+prob += lpSum(x[cube.name] + y[cube.name] for cube in cubes), "Total Cubes Used and Cut"
 
-# Constraints: Each cube can be cut at most once, and its cut pieces can fill the boxes
-for cube in cubes:
-    prob += lpSum(x[(cube.name, i)] for i in range(1, len(box_volumes) + 1)) <= 1, f"Cut Once Constraint for {cube.name}"
-
+# Constraints: The total volume of cubes in each box is within the box's volume ± tolerance
 for i, box_volume in enumerate(box_volumes):
-    # The total volume of cut pieces in each box is less than or equal to the box's volume + tolerance
-    prob += lpSum(x[(cube.name, i + 1)] * cube.volume for cube in cubes) <= box_volume + tolerance, f"Volume Constraint for Box {i + 1} Upper"
-    # The total volume of cut pieces in each box is greater than or equal to the box's volume - tolerance
-    prob += lpSum(x[(cube.name, i + 1)] * cube.volume for cube in cubes) >= box_volume - tolerance, f"Volume Constraint for Box {i + 1} Lower"
+    prob += lpSum((x[cube.name] + y[cube.name]) * cube.volume for cube in cubes) <= box_volume + tolerance, f"Volume Constraint for Box {i + 1} Upper"
+    prob += lpSum((x[cube.name] + y[cube.name]) * cube.volume for cube in cubes) >= box_volume - tolerance, f"Volume Constraint for Box {i + 1} Lower"
+
+# If a cube is cut (y[cube.name] == 1), it must be used (x[cube.name] == 1)
+for cube in cubes:
+    prob += y[cube.name] <= x[cube.name], f"Cut Implies Use for {cube.name}"
 
 # Solve the problem
 prob.solve()
 
 # Extract the solution
-selected_cuts = [(cube.name, i) for cube in cubes for i in range(1, len(box_volumes) + 1) if x[(cube.name, i)].value() == 1]
+selected_cubes = [cube.name for cube in cubes if x[cube.name].value() == 1]
+cut_cubes = [cube.name for cube in cubes if y[cube.name].value() == 1]
 
-# Print the selected cuts
-for cut_name, box_number in selected_cuts:
-    print(f"Cut {cut_name} is selected for Box {box_number}")
+# Print the selected and cut cubes
+print("Selected Cubes:", selected_cubes)
+print("Cut Cubes:", cut_cubes)
