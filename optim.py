@@ -8,6 +8,7 @@ class Cube:
 # Sample data
 box_volumes = [100, 250]
 cubes_data = {"Cube1": 350, "Cube2": 250, "Cube3": 5, "Cube4": 7, "Cube5": 8, "Cube6": 10}
+tolerance = 10  # Tolerance for each box
 
 # Create cubes
 cubes = [Cube(name, volume) for name, volume in cubes_data.items()]
@@ -26,8 +27,10 @@ for cube in cubes:
     prob += lpSum(x[(cube.name, i)] for i in range(1, len(box_volumes) + 1)) <= 1, f"Cut Once Constraint for {cube.name}"
 
 for i, box_volume in enumerate(box_volumes):
-    # The total volume of cut pieces in each box is less than or equal to the box's volume
-    prob += lpSum(x[(cube.name, i + 1)] * cube.volume for cube in cubes) <= box_volume, f"Volume Constraint for Box {i + 1}"
+    # The total volume of cut pieces in each box is less than or equal to the box's volume + tolerance
+    prob += lpSum(x[(cube.name, i + 1)] * cube.volume for cube in cubes) <= box_volume + tolerance, f"Volume Constraint for Box {i + 1} Upper"
+    # The total volume of cut pieces in each box is greater than or equal to the box's volume - tolerance
+    prob += lpSum(x[(cube.name, i + 1)] * cube.volume for cube in cubes) >= box_volume - tolerance, f"Volume Constraint for Box {i + 1} Lower"
 
 # Solve the problem
 prob.solve()
