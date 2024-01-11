@@ -12,7 +12,11 @@ def merge_dataframe(df_split):
             if index_number == 1:
                 merged_rows.append({'index': original_index, 'values': row['values'], **row.drop(['index', 'values']).to_dict()})
             else:
-                merged_rows[-1]['values'] += row['values']
+                # Find the corresponding row in merged_rows
+                for i, merged_row in enumerate(merged_rows):
+                    if merged_row['index'] == original_index:
+                        merged_rows[i]['values'] += row['values']
+                        break
 
         else:
             merged_rows.append({'index': original_index, 'values': row['values'], **row.drop(['index', 'values']).to_dict()})
