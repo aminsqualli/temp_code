@@ -25,6 +25,14 @@ for i, box_volume in enumerate(box_volumes):
     prob += lpSum(x[(cube.name, i + 1)] * cube.volume for cube in cubes) <= box_volume + tolerance, f"Volume Constraint for Box {i + 1} Upper"
     prob += lpSum(x[(cube.name, i + 1)] * cube.volume for cube in cubes) >= box_volume - tolerance, f"Volume Constraint for Box {i + 1} Lower"
 
+# Each cube can be used at most once in each box
+for cube in cubes:
+    prob += lpSum(x[(cube.name, i)] for i in range(1, len(box_volumes) + 1)) <= 1, f"Single Use Constraint for {cube.name}"
+
+# The total usage of each cube across all boxes should not exceed its volume
+for cube in cubes:
+    prob += lpSum(x[(cube.name, i)] for i in range(1, len(box_volumes) + 1)) * cube.volume <= cube.volume, f"Volume Constraint for {cube.name}"
+
 # Solve the problem
 prob.solve()
 
