@@ -7,7 +7,7 @@ def merge_dataframe(df_split):
         parts = row['index'].split('_')
         original_index = parts[0]
 
-        if len(parts) == 2:
+        if len(parts) > 1:
             index_number = int(parts[1])
             if index_number == 1:
                 merged_rows.append({'index': original_index, 'values': row['values'], **row.drop(['index', 'values']).to_dict()})
