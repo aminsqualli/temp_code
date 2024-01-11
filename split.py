@@ -1,30 +1,31 @@
 import pandas as pd
 import math
 
-# Sample DataFrame
+def split_dataframe(df):
+    new_rows = []
+
+    def split_values(index, value, other_columns):
+        max_value_per_row = 50
+        num_rows = math.ceil(value / max_value_per_row)
+
+        for i in range(num_rows):
+            new_index = f"{index}_{i + 1}"
+            new_value = min(max_value_per_row, value - i * max_value_per_row)
+            new_rows.append({'index': new_index, 'values': new_value, **other_columns})
+
+    for _, row in df.iterrows():
+        split_values(row['index'], row['values'], row.drop(['index', 'values']))
+
+    return pd.DataFrame(new_rows)
+
+# Sample DataFrame with additional columns
 data = {'index': ['A', 'B', 'C'],
-        'values': [105, 30, 80]}
+        'values': [105, 30, 80],
+        'other_column': ['X', 'Y', 'Z']}
 df = pd.DataFrame(data)
 
-# New DataFrame to store the split rows
-new_rows = []
-
-# Function to split values into rows
-def split_values(index, value):
-    max_value_per_row = 50
-    num_rows = math.ceil(value / max_value_per_row)
-
-    for i in range(num_rows):
-        new_index = f"{index}_{i + 1}"
-        new_value = min(max_value_per_row, value - i * max_value_per_row)
-        new_rows.append({'index': new_index, 'values': new_value})
-
-# Iterate through the original DataFrame
-for _, row in df.iterrows():
-    split_values(row['index'], row['values'])
-
-# Create a new DataFrame with split rows
-result_df = pd.DataFrame(new_rows)
+# Split the DataFrame
+df_split = split_dataframe(df)
 
 # Display the result
-print(result_df)
+print(df_split)
