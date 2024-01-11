@@ -14,7 +14,7 @@ tolerance = 10  # Tolerance for each box
 cubes = [Cube(name, volume) for name, volume in cubes_data.items()]
 
 # Create continuous variables for each cube and each box
-x = LpVariable.dicts("UseCube", [(cube.name, i) for cube in cubes for i in range(1, len(box_volumes) + 1)], lowBound=0, cat='Continuous')
+x = LpVariable.dicts("UseCube", [(cube.name, i) for cube in cubes for i in range(1, len(box_volumes) + 1)], lowBound=0, upBound=1, cat='Continuous')
 
 # Objective function: Minimize the total volume of cubes used
 prob = LpProblem("CubeCutting", LpMinimize)
