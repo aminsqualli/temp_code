@@ -1,0 +1,53 @@
+# python_script.py
+import pandas as pd
+import win32com.client as win32
+
+def create_dataframe():
+    # Your code to create a DataFrame goes here
+    data = {'Column1': [1, 2, 3], 'Column2': ['A', 'B', 'C']}
+    df = pd.DataFrame(data)
+    return df
+
+def update_excel_sheet(df):
+    excel = win32.gencache.EnsureDispatch('Excel.Application')
+    excel.Visible = True  # Optional, makes Excel visible during execution
+
+    workbook = excel.Workbooks.Open(r'C:\Path\to\YourWorkbook.xlsx')
+    worksheet = workbook.Worksheets('Sheet1')  # Replace 'Sheet1' with your sheet name
+
+    # Convert DataFrame to Excel Range
+    excel_range = worksheet.Range('A1').Resize(df.shape[0], df.shape[1])
+    excel_range.Value = df.values
+
+    # Save and close Excel
+    workbook.Save()
+    workbook.Close()
+    excel.Quit()
+
+if __name__ == "__main__":
+    df = create_dataframe()
+    update_excel_sheet(df)
+
+
+
+Sub RunPythonScriptAndUpdateExcel()
+    Dim objShell As Object
+    Set objShell = VBA.CreateObject("WScript.Shell")
+
+    ' Specify the path to your Python executable and script
+    Dim pythonPath As String
+    pythonPath = "C:\Path\to\python.exe"
+
+    Dim scriptPath As String
+    scriptPath = "C:\Path\to\python_script.py"
+
+    ' Build the command to run the Python script
+    Dim command As String
+    command = pythonPath & " " & scriptPath
+
+    ' Execute the command
+    objShell.Run command, 1, True  ' 1 to show the window, True to wait for completion
+
+    ' Release the object
+    Set objShell = Nothing
+End Sub
