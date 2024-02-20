@@ -7,14 +7,14 @@ class CustomTableModel(QAbstractTableModel):
         super().__init__()
         self._data = data or [[]]
 
-    def data(self, index: QModelIndex, role: int = Qt.DisplayRole):
+    def data(self, index: QModelIndex, role=Qt.DisplayRole):
         if role == Qt.DisplayRole or role == Qt.EditRole:
             return self._data[index.row()][index.column()]
 
     def setData(self, index: QModelIndex, value, role=Qt.EditRole):
         if role == Qt.EditRole:
             self._data[index.row()][index.column()] = value
-            self.dataChanged.emit(index, index, [Qt.EditRole])  # Emit dataChanged signal
+            self.dataChanged.emit(index, index)
             return True
         return False
 
