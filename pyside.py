@@ -45,11 +45,10 @@ class TableViewDialog(QDialog):
         self.save_button = QPushButton("Save Data")
         self.save_button.clicked.connect(self.save_data)
 
-        layout = QVBoxLayout()
+        layout = QVBoxLayout(self)
         layout.addWidget(self.table_view)
         layout.addWidget(self.add_row_button)
         layout.addWidget(self.save_button)
-        self.setLayout(layout)
 
         self.populate_initial_data()
 
@@ -80,4 +79,5 @@ class TableViewDialog(QDialog):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     dialog = TableViewDialog()
-    dialog.exec()
+    dialog.show()
+    sys.exit(app.exec())
