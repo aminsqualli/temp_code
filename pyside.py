@@ -10,6 +10,7 @@ class CustomTableModel(QAbstractTableModel):
     def data(self, index: QModelIndex, role=Qt.DisplayRole):
         if role == Qt.DisplayRole or role == Qt.EditRole:
             return self._data[index.row()][index.column()]
+        return None
 
     def setData(self, index: QModelIndex, value, role=Qt.EditRole):
         if role == Qt.EditRole:
@@ -56,63 +57,16 @@ class TableViewDialog(QDialog):
     def add_row(self):
         self.model._data.append(["", ""])
         self.model.layoutChanged.emit()
-        
-        
-class TableViewDialog(QDialog):
-    # Existing code...
 
     def get_table_data(self):
         data = []
         for row in range(self.model.rowCount()):
             row_data = []
             for column in range(self.model.columnCount()):
-                index = self.model.index(row, column)
-                value = self.model.data(index, Qt.DisplayRole)
+                value = self.model.data(self.model.index(row, column), Qt.EditRole)
                 row_data.append(value)
             data.append(row_data)
         return data
-        
-class TableViewDialog(QDialog):
-    # Existing code...
-
-    def get_table_data(self):
-        data = []
-        for row in range(self.model.rowCount()):
-            row_data = []
-            for column in range(self.model.columnCount()):
-                value = self.model.data(self.model.index(row, column), Qt.DisplayRole)
-                row_data.append(value)
-            data.append(row_data)
-        return data
-        
-class TableViewDialog(QDialog):
-    # Existing code...
-
-    def get_table_data(self):
-        data = []
-        for row in range(self.model.rowCount()):
-            row_data = []
-            for column in range(self.model.columnCount()):
-                index = self.model.index(row, column)
-                value = self.model.data(index, Qt.EditRole)  # Use Qt.EditRole to get updated data
-                row_data.append(value)
-            data.append(row_data)
-        return data
-
-# Example usage:
-# Retrieve data from the table
-table_data = dialog.get_table_data()
-print(table_data)
-
-# Example usage:
-# Retrieve data from the table
-table_data = dialog.get_table_data()
-print(table_data)
-
-# Example usage:
-# Retrieve data from the table
-table_data = dialog.get_table_data()
-print(table_data)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
