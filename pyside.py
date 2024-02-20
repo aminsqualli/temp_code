@@ -36,6 +36,7 @@ class TableViewDialog(QDialog):
         self.model = CustomTableModel()
         self.table_view = QTableView()
         self.table_view.setModel(self.model)
+        self.table_view.setEditTriggers(QTableView.DoubleClicked | QTableView.EditKeyPressed)
 
         self.add_row_button = QPushButton("Add Row")
         self.add_row_button.clicked.connect(self.add_row)
