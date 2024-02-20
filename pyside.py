@@ -84,6 +84,25 @@ class TableViewDialog(QDialog):
                 row_data.append(value)
             data.append(row_data)
         return data
+        
+class TableViewDialog(QDialog):
+    # Existing code...
+
+    def get_table_data(self):
+        data = []
+        for row in range(self.model.rowCount()):
+            row_data = []
+            for column in range(self.model.columnCount()):
+                index = self.model.index(row, column)
+                value = self.model.data(index, Qt.EditRole)  # Use Qt.EditRole to get updated data
+                row_data.append(value)
+            data.append(row_data)
+        return data
+
+# Example usage:
+# Retrieve data from the table
+table_data = dialog.get_table_data()
+print(table_data)
 
 # Example usage:
 # Retrieve data from the table
