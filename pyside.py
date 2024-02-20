@@ -1,11 +1,36 @@
 import sys
-from PySide6.QtWidgets import QApplication, QDialog, QTableView, QVBoxLayout, QPushButton, QStandardItemModel, QStandardItem
+from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex
+from PySide6.QtWidgets import QApplication, QDialog, QTableView, QVBoxLayout, QPushButton
+
+class CustomTableModel(QAbstractTableModel):
+    def __init__(self, data=None):
+        super().__init__()
+        self._data = data or [[]]
+
+    def data(self, index: QModelIndex, role: int = Qt.DisplayRole):
+        if role == Qt.DisplayRole or role == Qt.EditRole:
+            return self._data[index.row()][index.column()]
+
+    def setData(self, index: QModelIndex, value, role=Qt.EditRole):
+        if role == Qt.EditRole:
+            self._data[index.row()][index.column()] = value
+            self.dataChanged.emit(index, index)
+            return True
+        return False
+
+    def rowCount(self, parent=QModelIndex()):
+        return len(self._data)
+
+    def columnCount(self, parent=QModelIndex()):
+        if self._data:
+            return len(self._data[0])
+        return 0
 
 class TableViewDialog(QDialog):
     def __init__(self):
         super().__init__()
 
-        self.model = QStandardItemModel()
+        self.model = CustomTableModel()
         self.table_view = QTableView()
         self.table_view.setModel(self.model)
 
@@ -21,13 +46,12 @@ class TableViewDialog(QDialog):
 
     def populate_initial_data(self):
         # Populate initial data
-        self.model.setColumnCount(2)
-        self.model.setHorizontalHeaderLabels(["Column 1", "Column 2"])
-        self.add_row()
+        self.model._data = [["Data 1", "Data 2"]]
+        self.model.layoutChanged.emit()
 
     def add_row(self):
-        row = [QStandardItem("Data 1"), QStandardItem("Data 2")]
-        self.model.appendRow(row)
+        self.model._data.append(["", ""])
+        self.model.layoutChanged.emit()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
