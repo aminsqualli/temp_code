@@ -42,9 +42,13 @@ class TableViewDialog(QDialog):
         self.add_row_button = QPushButton("Add Row")
         self.add_row_button.clicked.connect(self.add_row)
 
+        self.save_button = QPushButton("Save Data")
+        self.save_button.clicked.connect(self.save_data)
+
         layout = QVBoxLayout()
         layout.addWidget(self.table_view)
         layout.addWidget(self.add_row_button)
+        layout.addWidget(self.save_button)
         self.setLayout(layout)
 
         self.populate_initial_data()
@@ -57,6 +61,11 @@ class TableViewDialog(QDialog):
     def add_row(self):
         self.model._data.append(["", ""])
         self.model.layoutChanged.emit()
+
+    def save_data(self):
+        table_data = self.get_table_data()
+        print("Updated Table Data:", table_data)
+        # Here you can do whatever you need with the updated table data
 
     def get_table_data(self):
         data = []
