@@ -18,6 +18,9 @@ class CustomTableModel(QAbstractTableModel):
             return True
         return False
 
+    def flags(self, index: QModelIndex):
+        return Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
+
     def rowCount(self, parent=QModelIndex()):
         return len(self._data)
 
