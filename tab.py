@@ -41,9 +41,12 @@ class MainWindow(QMainWindow):
         # Create a new instance of the UI loaded from the .ui file
         tab_content = tab_ui.__class__()
 
-        # Fill the table with random values
-        table = tab_content.findChild(QTableView, "tableView")
-        self.fill_table_random_values(table)
+        # Find the table view
+        table = tab_content.findChild(QTableView)
+
+        if table is not None:
+            # Fill the table with random values
+            self.fill_table_random_values(table)
 
         return tab_content
 
