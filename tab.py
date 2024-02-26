@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
         self.layout.addLayout(button_layout)
 
         self.ok_button.clicked.connect(self.ok_clicked)
-        self.cancel_button.clicked.connect(self.cancel_clicked)
+        self.cancel_button.clicked.connect(self.close)
 
     def setup_table(self, table_widget, data):
         table_widget.setRowCount(len(data))
