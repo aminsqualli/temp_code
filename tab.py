@@ -1,5 +1,6 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QTableWidget, \
+    QTableWidgetItem, QPushButton
 
 
 class MainWindow(QMainWindow):
@@ -36,12 +37,31 @@ class MainWindow(QMainWindow):
 
         self.layout.addWidget(self.tab_widget)
 
+        # Add OK and Cancel buttons
+        self.ok_button = QPushButton("OK")
+        self.cancel_button = QPushButton("Cancel")
+
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(self.ok_button)
+        button_layout.addWidget(self.cancel_button)
+
+        self.layout.addLayout(button_layout)
+
+        self.ok_button.clicked.connect(self.ok_clicked)
+        self.cancel_button.clicked.connect(self.cancel_clicked)
+
     def setup_table(self, table_widget, data):
         table_widget.setRowCount(len(data))
         table_widget.setColumnCount(len(data[0]))
         for i, row in enumerate(data):
             for j, item in enumerate(row):
                 table_widget.setItem(i, j, QTableWidgetItem(item))
+
+    def ok_clicked(self):
+        print("OK Button Clicked")
+
+    def cancel_clicked(self):
+        print("Cancel Button Clicked")
 
 
 if __name__ == "__main__":
