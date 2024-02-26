@@ -1,6 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPushButton, QWidget, QTabWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPushButton, QWidget, QTabWidget, QTableView, QStandardItemModel, QStandardItem
 from PyQt5 import uic
+import random
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -19,9 +20,21 @@ class MainWindow(QMainWindow):
         # Create three tabs
         for i in range(3):
             tab = QWidget()
-            tab_ui = uic.loadUi("tab_ui_file.ui")  # Load tab content from .ui file
             tab_layout = QVBoxLayout(tab)
-            tab_layout.addWidget(tab_ui)
+            table_view = QTableView()
+            model = QStandardItemModel()
+            table_view.setModel(model)
+
+            # Add columns to the model
+            for col in range(5):
+                model.setHorizontalHeaderItem(col, QStandardItem(f"Column {col+1}"))
+
+            # Add random values to the model
+            for row in range(10):
+                row_items = [QStandardItem(str(random.randint(1, 100))) for _ in range(5)]
+                model.appendRow(row_items)
+
+            tab_layout.addWidget(table_view)
             self.tab_widget.addTab(tab, f"Table {i+1}")
 
         # Set up the "OK" button manually
