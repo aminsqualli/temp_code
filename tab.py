@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QTableWidget, \
     QTableWidgetItem, QPushButton, QHBoxLayout
 import random
+import pandas as pd
 
 
 class MainWindow(QMainWindow):
@@ -79,23 +80,26 @@ class MainWindow(QMainWindow):
                 table_widget.setItem(i, j, item)
 
     def ok_clicked(self):
-        print("Content of Table 1:")
-        self.print_table_content(self.table1)
-        print("Content of Table 2:")
-        self.print_table_content(self.table2)
-        print("Content of Table 3:")
-        self.print_table_content(self.table3)
-
-    def print_table_content(self, table_widget):
-        for row in range(table_widget.rowCount()):
-            row_data = []
+        dataframes = []
+        for table_widget in [self.table1, self.table2, self.table3]:
+            data = []
+            headers = []
             for column in range(table_widget.columnCount()):
-                item = table_widget.item(row, column)
-                if item is not None:
-                    row_data.append(item.text())
-                else:
-                    row_data.append("None")
-            print("\t".join(row_data))
+                headers.append(table_widget.horizontalHeaderItem(column).text())
+            for row in range(table_widget.rowCount()):
+                row_data = []
+                for column in range(table_widget.columnCount()):
+                    item = table_widget.item(row, column)
+                    row_data.append(item.text() if item is not None else "")
+                data.append(row_data)
+            df = pd.DataFrame(data, columns=headers)
+            dataframes.append(df)
+
+        # Print dataframes
+        for idx, df in enumerate(dataframes, start=1):
+            print(f"DataFrame {idx}:")
+            print(df)
+            print("\n")
 
 
 if __name__ == "__main__":
