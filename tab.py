@@ -54,11 +54,15 @@ class MainWindow(QMainWindow):
     def setup_table(self, table_widget, rows, columns):
         table_widget.setRowCount(rows)
         table_widget.setColumnCount(columns)
+
+        # Set headers
+        for col in range(columns):
+            table_widget.setHorizontalHeaderItem(col, QTableWidgetItem(f"Column {col + 1}"))
+
         for i in range(rows):
             for j in range(columns):
-                item = QTableWidgetItem(f"Row {i}, Col {j}, Value: {random.randint(1, 100)}")
+                item = QTableWidgetItem(f"Row {i + 1}, Col {j + 1}, Value: {random.randint(1, 100)}")
                 table_widget.setItem(i, j, item)
-                table_widget.setItem(i, j, QTableWidgetItem(item.text()))
 
     def ok_clicked(self):
         print("Content of Table 1:")
