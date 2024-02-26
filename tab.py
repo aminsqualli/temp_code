@@ -58,6 +58,7 @@ class MainWindow(QMainWindow):
             for j in range(columns):
                 item = QTableWidgetItem(f"Row {i}, Col {j}, Value: {random.randint(1, 100)}")
                 table_widget.setItem(i, j, item)
+                table_widget.setItem(i, j, QTableWidgetItem(item.text()))
 
     def ok_clicked(self):
         print("Content of Table 1:")
@@ -84,4 +85,3 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())
-    
