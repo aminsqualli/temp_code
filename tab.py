@@ -20,12 +20,13 @@ class MainWindow(QMainWindow):
 
         # Load the UI file
         self.tab_ui = uic.loadUi("tab_ui_file.ui")
+        print("UI file loaded successfully.")
 
         # Create three tabs
         for i in range(3):
             tab = QWidget()
             tab_layout = QVBoxLayout(tab)
-            tab_layout.addWidget(self.create_tab_content(self.tab_ui))
+            tab_layout.addWidget(self.create_tab_content())
 
             self.tab_widget.addTab(tab, f"Table {i+1}")
 
@@ -37,9 +38,11 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(self.tab_widget)
         self.layout.addWidget(self.ok_button)
 
-    def create_tab_content(self, tab_ui):
+    def create_tab_content(self):
         # Create a new instance of the UI loaded from the .ui file
-        tab_content = tab_ui.__class__()
+        tab_content = QWidget()
+        tab_layout = QVBoxLayout(tab_content)
+        tab_layout.addWidget(self.tab_ui)
 
         # Find the table view
         table = tab_content.findChild(QTableView)
