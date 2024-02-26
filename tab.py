@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QTableWidget, \
-    QTableWidgetItem, QPushButton
+    QTableWidgetItem, QPushButton, QHBoxLayout
+import random
 
 
 class MainWindow(QMainWindow):
@@ -27,9 +28,9 @@ class MainWindow(QMainWindow):
         self.table2 = QTableWidget()
         self.table3 = QTableWidget()
 
-        self.setup_table(self.table1, [[f"Table 1 Row {i}, Col {j}" for j in range(5)] for i in range(10)])
-        self.setup_table(self.table2, [[f"Table 2 Row {i}, Col {j}" for j in range(3)] for i in range(7)])
-        self.setup_table(self.table3, [[f"Table 3 Row {i}, Col {j}" for j in range(4)] for i in range(12)])
+        self.setup_table(self.table1, 10, 5)  # 10 rows, 5 columns
+        self.setup_table(self.table2, 7, 3)   # 7 rows, 3 columns
+        self.setup_table(self.table3, 12, 4)  # 12 rows, 4 columns
 
         self.tab_widget.addTab(self.tab1, "Table 1")
         self.tab_widget.addTab(self.tab2, "Table 2")
@@ -50,12 +51,13 @@ class MainWindow(QMainWindow):
         self.ok_button.clicked.connect(self.ok_clicked)
         self.cancel_button.clicked.connect(self.close)
 
-    def setup_table(self, table_widget, data):
-        table_widget.setRowCount(len(data))
-        table_widget.setColumnCount(len(data[0]))
-        for i, row in enumerate(data):
-            for j, item in enumerate(row):
-                table_widget.setItem(i, j, QTableWidgetItem(item))
+    def setup_table(self, table_widget, rows, columns):
+        table_widget.setRowCount(rows)
+        table_widget.setColumnCount(columns)
+        for i in range(rows):
+            for j in range(columns):
+                item = QTableWidgetItem(f"Row {i}, Col {j}, Value: {random.randint(1, 100)}")
+                table_widget.setItem(i, j, item)
 
     def ok_clicked(self):
         print("Content of Table 1:")
