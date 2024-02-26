@@ -2,7 +2,8 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPushButton, QWidget, QTabWidget, QTableView
 from PyQt5 import uic
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
-import random
+from PyQt5.QtCore import Qt
+import pandas as pd
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -41,34 +42,27 @@ class MainWindow(QMainWindow):
         tab_layout = QVBoxLayout(tab_content)
         tab_layout.addWidget(tab_ui)
 
-        # Find the table view
-        table = tab_content.findChild(QTableView)
-
-        if table is not None:
-            # Fill the table with random values
-            self.fill_table_random_values(table)
-
         return tab_content
 
-    def fill_table_random_values(self, table):
-        # Create a new model
-        model = QStandardItemModel()
-
-        # Set the model for the table
-        table.setModel(model)
-
-        # Add columns to the model
-        model.setColumnCount(5)
-        for col in range(5):
-            model.setHeaderData(col, table.horizontalHeader().orientation(), f"Column {col+1}")
-
-        # Add random values to the model
-        for row in range(10):
-            row_items = [QStandardItem(str(random.randint(1, 100))) for _ in range(5)]
-            model.appendRow(row_items)
+    def tables_to_dataframes(self):
+        dataframes = []
+        for i in range(self.tab_widget.count()):
+            tab = self.tab_widget.widget(i)
+            table = tab.findChild(QTableView)
+            model = table.model()
+            if model is not None:
+                dataframe = pd.DataFrame([[model.index(row, col).data() for col in range(model.columnCount())]
+                                          for row in range(model.rowCount())],
+                                         columns=[model.headerData(col, Qt.Horizontal) for col in range(model.columnCount())])
+                dataframes.append(dataframe)
+        return dataframes
 
     def ok_clicked(self):
-        print("OK button clicked")
+        dataframes = self.tables_to_dataframes()
+        for i, df in enumerate(dataframes, 1):
+            print(f"Table {i} DataFrame:")
+            print(df)
+            print()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
