@@ -32,6 +32,20 @@ class MainWindow(QMainWindow):
         self.setup_table(self.table2, 7, 3)   # 7 rows, 3 columns
         self.setup_table(self.table3, 12, 4)  # 12 rows, 4 columns
 
+        # Add tables to tabs
+        tab1_layout = QVBoxLayout()
+        tab1_layout.addWidget(self.table1)
+        self.tab1.setLayout(tab1_layout)
+
+        tab2_layout = QVBoxLayout()
+        tab2_layout.addWidget(self.table2)
+        self.tab2.setLayout(tab2_layout)
+
+        tab3_layout = QVBoxLayout()
+        tab3_layout.addWidget(self.table3)
+        self.tab3.setLayout(tab3_layout)
+
+        # Add tabs to tab widget
         self.tab_widget.addTab(self.tab1, "Table 1")
         self.tab_widget.addTab(self.tab2, "Table 2")
         self.tab_widget.addTab(self.tab3, "Table 3")
