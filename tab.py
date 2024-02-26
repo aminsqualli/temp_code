@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPushButton, QWidget, QTabWidget, QTableView
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPushButton, QWidget, QTabWidget, QTableView, QStandardItemModel, QStandardItem
 from PyQt5 import uic
 import random
 
@@ -39,11 +39,17 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(self.ok_button)
 
     def fill_table_random_values(self, table):
-        # Generate random values for the table
-        for row in range(table.model().rowCount()):
-            for column in range(table.model().columnCount()):
-                value = random.randint(1, 100)
-                table.model().setData(table.model().index(row, column), value)
+        if table.model() is None:
+            # Create a new model if one is not already set
+            model = QStandardItemModel()
+            table.setModel(model)
+        else:
+            model = table.model()
+
+        # Fill the model with random values
+        for row in range(10):
+            row_items = [QStandardItem(str(random.randint(1, 100))) for _ in range(5)]
+            model.appendRow(row_items)
 
     def ok_clicked(self):
         print("OK button clicked")
