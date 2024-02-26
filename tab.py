@@ -27,9 +27,9 @@ class MainWindow(QMainWindow):
         self.table2 = QTableWidget()
         self.table3 = QTableWidget()
 
-        self.setup_table(self.table1, [[f"Row {i}, Col {j}" for j in range(5)] for i in range(10)])
-        self.setup_table(self.table2, [[f"Row {i}, Col {j}" for j in range(3)] for i in range(7)])
-        self.setup_table(self.table3, [[f"Row {i}, Col {j}" for j in range(4)] for i in range(12)])
+        self.setup_table(self.table1, [[f"Table 1 Row {i}, Col {j}" for j in range(5)] for i in range(10)])
+        self.setup_table(self.table2, [[f"Table 2 Row {i}, Col {j}" for j in range(3)] for i in range(7)])
+        self.setup_table(self.table3, [[f"Table 3 Row {i}, Col {j}" for j in range(4)] for i in range(12)])
 
         self.tab_widget.addTab(self.tab1, "Table 1")
         self.tab_widget.addTab(self.tab2, "Table 2")
@@ -58,10 +58,23 @@ class MainWindow(QMainWindow):
                 table_widget.setItem(i, j, QTableWidgetItem(item))
 
     def ok_clicked(self):
-        print("OK Button Clicked")
+        print("Content of Table 1:")
+        self.print_table_content(self.table1)
+        print("Content of Table 2:")
+        self.print_table_content(self.table2)
+        print("Content of Table 3:")
+        self.print_table_content(self.table3)
 
-    def cancel_clicked(self):
-        print("Cancel Button Clicked")
+    def print_table_content(self, table_widget):
+        for row in range(table_widget.rowCount()):
+            row_data = []
+            for column in range(table_widget.columnCount()):
+                item = table_widget.item(row, column)
+                if item is not None:
+                    row_data.append(item.text())
+                else:
+                    row_data.append("None")
+            print("\t".join(row_data))
 
 
 if __name__ == "__main__":
