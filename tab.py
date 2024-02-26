@@ -1,6 +1,7 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPushButton, QWidget, QTabWidget, QTableView, QStandardItemModel, QStandardItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPushButton, QWidget, QTabWidget, QTableView
 from PyQt5 import uic
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
 import random
 
 class MainWindow(QMainWindow):
@@ -17,16 +18,14 @@ class MainWindow(QMainWindow):
 
         self.tab_widget = QTabWidget()
 
+        # Load the UI file
+        self.tab_ui = uic.loadUi("tab_ui_file.ui")
+
         # Create three tabs
         for i in range(3):
             tab = QWidget()
-            tab_ui = uic.loadUi("tab_ui_file.ui")  # Load tab content from .ui file
             tab_layout = QVBoxLayout(tab)
-            tab_layout.addWidget(tab_ui)
-
-            # Fill the table with random values
-            table = tab_ui.findChild(QTableView, "tableView")
-            self.fill_table_random_values(table)
+            tab_layout.addWidget(self.create_tab_content(self.tab_ui))
 
             self.tab_widget.addTab(tab, f"Table {i+1}")
 
@@ -38,15 +37,29 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(self.tab_widget)
         self.layout.addWidget(self.ok_button)
 
-    def fill_table_random_values(self, table):
-        if table.model() is None:
-            # Create a new model if one is not already set
-            model = QStandardItemModel()
-            table.setModel(model)
-        else:
-            model = table.model()
+    def create_tab_content(self, tab_ui):
+        # Create a new instance of the UI loaded from the .ui file
+        tab_content = tab_ui.__class__()
 
-        # Fill the model with random values
+        # Fill the table with random values
+        table = tab_content.findChild(QTableView, "tableView")
+        self.fill_table_random_values(table)
+
+        return tab_content
+
+    def fill_table_random_values(self, table):
+        # Create a new model
+        model = QStandardItemModel()
+
+        # Set the model for the table
+        table.setModel(model)
+
+        # Add columns to the model
+        model.setColumnCount(5)
+        for col in range(5):
+            model.setHeaderData(col, table.orientation(), f"Column {col+1}")
+
+        # Add random values to the model
         for row in range(10):
             row_items = [QStandardItem(str(random.randint(1, 100))) for _ in range(5)]
             model.appendRow(row_items)
