@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPushButton, QWidget, QTabWidget, QTableView, QStandardItemModel, QStandardItem
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPushButton, QWidget, QTabWidget, QTableView
 from PyQt5 import uic
 import random
 
@@ -20,21 +20,14 @@ class MainWindow(QMainWindow):
         # Create three tabs
         for i in range(3):
             tab = QWidget()
+            tab_ui = uic.loadUi("tab_ui_file.ui")  # Load tab content from .ui file
             tab_layout = QVBoxLayout(tab)
-            table_view = QTableView()
-            model = QStandardItemModel()
-            table_view.setModel(model)
+            tab_layout.addWidget(tab_ui)
 
-            # Add columns to the model
-            for col in range(5):
-                model.setHorizontalHeaderItem(col, QStandardItem(f"Column {col+1}"))
+            # Fill the table with random values
+            table = tab_ui.findChild(QTableView, "tableView")
+            self.fill_table_random_values(table)
 
-            # Add random values to the model
-            for row in range(10):
-                row_items = [QStandardItem(str(random.randint(1, 100))) for _ in range(5)]
-                model.appendRow(row_items)
-
-            tab_layout.addWidget(table_view)
             self.tab_widget.addTab(tab, f"Table {i+1}")
 
         # Set up the "OK" button manually
@@ -44,6 +37,13 @@ class MainWindow(QMainWindow):
         # Add the tab widget and the "OK" button to the layout
         self.layout.addWidget(self.tab_widget)
         self.layout.addWidget(self.ok_button)
+
+    def fill_table_random_values(self, table):
+        # Generate random values for the table
+        for row in range(table.model().rowCount()):
+            for column in range(table.model().columnCount()):
+                value = random.randint(1, 100)
+                table.model().setData(table.model().index(row, column), value)
 
     def ok_clicked(self):
         print("OK button clicked")
