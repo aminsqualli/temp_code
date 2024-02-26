@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
         # Add columns to the model
         model.setColumnCount(5)
         for col in range(5):
-            model.setHeaderData(col, table.orientation(), f"Column {col+1}")
+            model.setHeaderData(col, table.horizontalHeader().orientation(), f"Column {col+1}")
 
         # Add random values to the model
         for row in range(10):
