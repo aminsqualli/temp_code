@@ -8,20 +8,21 @@ class CheckableListModel(QAbstractListModel):
         super().__init__()
         self.items = items
         self.checked_items = [False] * len(items)  # Initialize all items as unchecked
+        self.filtered_indices = list(range(len(items)))  # Indices of items after filtering
 
     def rowCount(self, parent=QModelIndex()):
-        return len(self.items)
+        return len(self.filtered_indices)
 
     def data(self, index, role):
         if role == Qt.DisplayRole:
-            return self.items[index.row()]
+            return self.items[self.filtered_indices[index.row()]]
         elif role == Qt.CheckStateRole:
-            return Qt.Checked if self.checked_items[index.row()] else Qt.Unchecked
+            return Qt.Checked if self.checked_items[self.filtered_indices[index.row()]] else Qt.Unchecked
 
     def setData(self, index, value, role):
         if role == Qt.CheckStateRole:
-            self.checked_items[index.row()] = value == Qt.Checked
-            self.dataChanged.emit(index, index)
+            self.checked_items[self.filtered_indices[index.row()]] = value == Qt.Checked
+            self.dataChanged.emit(index, index, [role])
             return True
         return False
 
@@ -72,25 +73,21 @@ class CheckableListWidget(QWidget):
         self.setLayout(layout)
 
     def filter_list(self, text):
-        self.model.beginResetModel()
-        if text:
-            filtered_items = [item for item in self.model.items if text.lower() in item.lower()]
-            filtered_checked = [self.model.checked_items[i] for i, item in enumerate(self.model.items) if
-                                text.lower() in item.lower()]
-            self.model.items = filtered_items
-            self.model.checked_items = filtered_checked
-        else:
-            self.model.items = items
-        self.model.endResetModel()
+        filtered_indices = []
+        for i, item in enumerate(self.model.items):
+            if text.lower() in item.lower():
+                filtered_indices.append(i)
+        self.model.filtered_indices = filtered_indices
+        self.model.layoutChanged.emit()
 
     def select_all(self):
         all_checked = all(self.model.checked_items)
-        for i in range(len(self.model.checked_items)):
+        for i in self.model.filtered_indices:
             self.model.checked_items[i] = not all_checked
-        self.model.dataChanged.emit(self.model.index(0), self.model.index(self.model.rowCount() - 1))
+        self.model.dataChanged.emit(self.model.index(0), self.model.index(len(self.model.filtered_indices) - 1))
 
     def print_selected(self):
-        selected_items = [self.model.items[i] for i, checked in enumerate(self.model.checked_items) if checked]
+        selected_items = [self.model.items[i] for i in self.model.filtered_indices if self.model.checked_items[i]]
         print("Selected items:", selected_items)
         self.close()
 
