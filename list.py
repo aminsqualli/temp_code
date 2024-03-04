@@ -42,6 +42,8 @@ class CheckableListWidget(QWidget):
         for item in self.items:
             list_item = QListWidgetItem()
             checkbox = QCheckBox(item)
+            if item in self.checked_items:  # Set checkbox state based on stored checked items
+                checkbox.setChecked(True)
             self.list_widget.addItem(list_item)
             self.list_widget.setItemWidget(list_item, checkbox)
 
