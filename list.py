@@ -1,12 +1,35 @@
 import sys
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QLineEdit, QPushButton, QCheckBox, QListWidgetItem
+from PySide6.QtCore import Qt, QAbstractListModel, QModelIndex
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QListView, QLineEdit, QPushButton
+
+
+class CheckableListModel(QAbstractListModel):
+    def __init__(self, items):
+        super().__init__()
+        self.items = items
+        self.checked_items = [False] * len(items)  # Initialize all items as unchecked
+
+    def rowCount(self, parent=QModelIndex()):
+        return len(self.items)
+
+    def data(self, index, role):
+        if role == Qt.DisplayRole:
+            return self.items[index.row()]
+        elif role == Qt.CheckStateRole:
+            return Qt.Checked if self.checked_items[index.row()] else Qt.Unchecked
+
+    def setData(self, index, value, role):
+        if role == Qt.CheckStateRole:
+            self.checked_items[index.row()] = value == Qt.Checked
+            self.dataChanged.emit(index, index)
+            return True
+        return False
 
 
 class CheckableListWidget(QWidget):
     def __init__(self, items):
         super().__init__()
-        self.items = items
-        self.checked_items = set()  # Store checked items separately
+        self.model = CheckableListModel(items)
         self.init_ui()
 
     def init_ui(self):
@@ -20,11 +43,11 @@ class CheckableListWidget(QWidget):
         search_layout.addWidget(self.search_box)
 
         # List Box
-        self.list_widget = QListWidget()
-        self.list_widget.setSelectionMode(QListWidget.MultiSelection)
-        self.populate_list()
+        self.list_view = QListView()
+        self.list_view.setModel(self.model)
+        self.list_view.setEditTriggers(QListView.NoEditTriggers)
         layout.addLayout(search_layout)
-        layout.addWidget(self.list_widget)
+        layout.addWidget(self.list_view)
 
         # Select All Button
         self.select_button = QPushButton("Select All")
@@ -38,56 +61,26 @@ class CheckableListWidget(QWidget):
 
         self.setLayout(layout)
 
-    def populate_list(self):
-        for item in self.items:
-            list_item = QListWidgetItem()
-            checkbox = QCheckBox(item)
-            if item in self.checked_items:  # Set checkbox state based on stored checked items
-                checkbox.setChecked(True)
-            self.list_widget.addItem(list_item)
-            self.list_widget.setItemWidget(list_item, checkbox)
-
     def filter_list(self, text):
-        self.list_widget.clear()
-        for item in self.items:
-            if text.lower() in item.lower():
-                list_item = QListWidgetItem()
-                checkbox = QCheckBox(item)
-                if item in self.checked_items:  # Set checkbox state based on stored checked items
-                    checkbox.setChecked(True)
-                self.list_widget.addItem(list_item)
-                self.list_widget.setItemWidget(list_item, checkbox)
+        self.model.beginResetModel()
+        if text:
+            filtered_items = [item for item in self.model.items if text.lower() in item.lower()]
+            filtered_checked = [self.model.checked_items[i] for i, item in enumerate(self.model.items) if
+                                text.lower() in item.lower()]
+            self.model.items = filtered_items
+            self.model.checked_items = filtered_checked
+        else:
+            self.model.items = items
+        self.model.endResetModel()
 
     def select_all(self):
-        all_checked = True
-        for i in range(self.list_widget.count()):
-            item = self.list_widget.item(i)
-            widget = self.list_widget.itemWidget(item)
-            if not widget.isChecked():
-                all_checked = False
-                break
-        if all_checked:
-            for i in range(self.list_widget.count()):
-                item = self.list_widget.item(i)
-                widget = self.list_widget.itemWidget(item)
-                widget.setChecked(False)
-            self.checked_items.clear()
-            self.select_button.setText("Select All")
-        else:
-            for i in range(self.list_widget.count()):
-                item = self.list_widget.item(i)
-                widget = self.list_widget.itemWidget(item)
-                widget.setChecked(True)
-                self.checked_items.add(widget.text())
-            self.select_button.setText("Unselect All")
+        all_checked = all(self.model.checked_items)
+        for i in range(len(self.model.checked_items)):
+            self.model.checked_items[i] = not all_checked
+        self.model.dataChanged.emit(self.model.index(0), self.model.index(self.model.rowCount() - 1))
 
     def print_selected(self):
-        selected_items = []
-        for i in range(self.list_widget.count()):
-            item = self.list_widget.item(i)
-            widget = self.list_widget.itemWidget(item)
-            if widget.isChecked():
-                selected_items.append(widget.text())
+        selected_items = [self.model.items[i] for i, checked in enumerate(self.model.checked_items) if checked]
         print("Selected items:", selected_items)
         self.close()
 
