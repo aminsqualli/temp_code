@@ -24,16 +24,10 @@ class CheckableListModel(QAbstractListModel):
             self.checked_items[self.filtered_indices[index.row()]] = value == Qt.Checked
             self.dataChanged.emit(index, index, [role])
             return True
-        return super().setData(index, value, role)
+        return False
 
     def flags(self, index):
         return Qt.ItemIsEnabled | Qt.ItemIsUserCheckable | Qt.ItemIsSelectable
-
-
-class CheckableItemDelegate(QStyledItemDelegate):
-    def initStyleOption(self, option, index):
-        super().initStyleOption(option, index)
-        option.features |= QStyleOptionViewItem.HasCheckIndicator
 
 
 class CheckableListWidget(QWidget):
@@ -55,7 +49,6 @@ class CheckableListWidget(QWidget):
         # List Box
         self.list_view = QListView()
         self.list_view.setModel(self.model)
-        self.list_view.setItemDelegate(CheckableItemDelegate())
         self.list_view.setEditTriggers(QListView.NoEditTriggers)
         layout.addLayout(search_layout)
         layout.addWidget(self.list_view)
