@@ -6,7 +6,7 @@ class CheckableListWidget(QWidget):
     def __init__(self, items):
         super().__init__()
         self.items = items
-        self.checked_items = set()
+        self.checked_items = set()  # Store checked items separately
         self.init_ui()
 
     def init_ui(self):
@@ -42,6 +42,8 @@ class CheckableListWidget(QWidget):
         for item in self.items:
             list_item = QListWidgetItem()
             checkbox = QCheckBox(item)
+            if item in self.checked_items:  # Set checkbox state based on stored checked items
+                checkbox.setChecked(True)
             self.list_widget.addItem(list_item)
             self.list_widget.setItemWidget(list_item, checkbox)
 
@@ -51,16 +53,18 @@ class CheckableListWidget(QWidget):
             if text.lower() in item.lower():
                 list_item = QListWidgetItem()
                 checkbox = QCheckBox(item)
-                if item in self.checked_items:
+                if item in self.checked_items:  # Set checkbox state based on stored checked items
                     checkbox.setChecked(True)
                 self.list_widget.addItem(list_item)
                 self.list_widget.setItemWidget(list_item, checkbox)
 
     def select_all(self):
+        self.checked_items.clear()  # Clear stored checked items
         for i in range(self.list_widget.count()):
             item = self.list_widget.item(i)
             widget = self.list_widget.itemWidget(item)
             widget.setChecked(True)
+            self.checked_items.add(widget.text())  # Add checked item to stored checked items
 
     def print_selected(self):
         selected_items = []
