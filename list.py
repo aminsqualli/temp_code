@@ -1,5 +1,6 @@
 import sys
 from PySide6.QtCore import Qt, QAbstractListModel, QModelIndex
+from PySide6.QtGui import QPainter
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QListView, QLineEdit, QPushButton, QStyledItemDelegate, QCheckBox
 
 
@@ -37,7 +38,7 @@ class CheckableItemDelegate(QStyledItemDelegate):
         super().paint(painter, option, index)
         painter.setPen(Qt.NoPen)
         painter.setBrush(Qt.white if option.state & QStyle.State_Selected else option.palette.base())
-        painter.drawRect(checkbox_rect)
+        painter.drawRect(option.rect)
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setBrush(Qt.black if checked else Qt.lightGray)
         painter.drawRoundedRect(checkbox_rect.adjusted(2, 2, -2, -2), 3, 3)
