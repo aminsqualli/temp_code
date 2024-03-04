@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtCore import Qt, QAbstractListModel, QModelIndex
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QListView, QLineEdit, QPushButton, QCheckBox
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QListView, QLineEdit, QPushButton, QStyledItemDelegate, QCheckBox
 
 
 class CheckableListModel(QAbstractListModel):
@@ -29,6 +29,12 @@ class CheckableListModel(QAbstractListModel):
         return Qt.ItemIsEnabled | Qt.ItemIsUserCheckable | Qt.ItemIsSelectable
 
 
+class CheckableItemDelegate(QStyledItemDelegate):
+    def initStyleOption(self, option, index):
+        super().initStyleOption(option, index)
+        option.features |= QStyleOptionViewItem.HasCheckIndicator
+
+
 class CheckableListWidget(QWidget):
     def __init__(self, items):
         super().__init__()
@@ -48,6 +54,7 @@ class CheckableListWidget(QWidget):
         # List Box
         self.list_view = QListView()
         self.list_view.setModel(self.model)
+        self.list_view.setItemDelegate(CheckableItemDelegate())
         self.list_view.setEditTriggers(QListView.NoEditTriggers)
         layout.addLayout(search_layout)
         layout.addWidget(self.list_view)
