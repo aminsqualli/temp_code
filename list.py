@@ -35,13 +35,22 @@ class CheckableItemDelegate(QStyledItemDelegate):
     def paint(self, painter, option, index):
         checked = index.data(Qt.CheckStateRole) == Qt.Checked
         checkbox_rect = option.rect.adjusted(5, 0, -5, 0)
-        super().paint(painter, option, index)
-        painter.setPen(Qt.NoPen)
-        painter.setBrush(Qt.white if option.state & QStyle.State_Selected else option.palette.base())
-        painter.drawRect(option.rect)
+        
+        # Draw background
+        if option.state & QStyle.State_Selected:
+            painter.fillRect(option.rect, option.palette.highlight())
+        else:
+            painter.fillRect(option.rect, option.palette.base())
+        
+        # Draw checkbox
         painter.setRenderHint(QPainter.Antialiasing)
         painter.setBrush(Qt.black if checked else Qt.lightGray)
         painter.drawRoundedRect(checkbox_rect.adjusted(2, 2, -2, -2), 3, 3)
+        
+        # Draw text
+        text_rect = option.rect.adjusted(checkbox_rect.width() + 10, 0, 0, 0)
+        text = index.data(Qt.DisplayRole)
+        painter.drawText(text_rect, Qt.AlignVCenter, text)
 
     def editorEvent(self, event, model, option, index):
         if event.type() == QEvent.MouseButtonRelease and event.button() == Qt.LeftButton:
