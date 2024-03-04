@@ -6,6 +6,7 @@ class CheckableListWidget(QWidget):
     def __init__(self, items):
         super().__init__()
         self.items = items
+        self.checked_items = set()
         self.init_ui()
 
     def init_ui(self):
@@ -50,6 +51,8 @@ class CheckableListWidget(QWidget):
             if text.lower() in item.lower():
                 list_item = QListWidgetItem()
                 checkbox = QCheckBox(item)
+                if item in self.checked_items:
+                    checkbox.setChecked(True)
                 self.list_widget.addItem(list_item)
                 self.list_widget.setItemWidget(list_item, checkbox)
 
