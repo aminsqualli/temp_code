@@ -1,5 +1,5 @@
 import sys
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QLineEdit, QPushButton
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QLineEdit, QPushButton, QCheckBox, QListWidgetItem
 
 
 class CheckableListWidget(QWidget):
@@ -20,28 +20,54 @@ class CheckableListWidget(QWidget):
 
         # List Box
         self.list_widget = QListWidget()
-        self.list_widget.addItems(self.items)
         self.list_widget.setSelectionMode(QListWidget.MultiSelection)
+        self.populate_list()
         layout.addLayout(search_layout)
         layout.addWidget(self.list_widget)
 
-        # Button
+        # Select All Button
         select_button = QPushButton("Select All")
         select_button.clicked.connect(self.select_all)
         layout.addWidget(select_button)
 
+        # Print Selected Button
+        print_button = QPushButton("Print Selected")
+        print_button.clicked.connect(self.print_selected)
+        layout.addWidget(print_button)
+
         self.setLayout(layout)
+
+    def populate_list(self):
+        for item in self.items:
+            list_item = QListWidgetItem()
+            checkbox = QCheckBox(item)
+            self.list_widget.addItem(list_item)
+            self.list_widget.setItemWidget(list_item, checkbox)
 
     def filter_list(self, text):
         self.list_widget.clear()
         for item in self.items:
             if text.lower() in item.lower():
-                self.list_widget.addItem(item)
+                list_item = QListWidgetItem()
+                checkbox = QCheckBox(item)
+                self.list_widget.addItem(list_item)
+                self.list_widget.setItemWidget(list_item, checkbox)
 
     def select_all(self):
         for i in range(self.list_widget.count()):
             item = self.list_widget.item(i)
-            item.setSelected(True)
+            widget = self.list_widget.itemWidget(item)
+            widget.setChecked(True)
+
+    def print_selected(self):
+        selected_items = []
+        for i in range(self.list_widget.count()):
+            item = self.list_widget.item(i)
+            widget = self.list_widget.itemWidget(item)
+            if widget.isChecked():
+                selected_items.append(widget.text())
+        print("Selected items:", selected_items)
+        self.close()
 
 
 if __name__ == "__main__":
