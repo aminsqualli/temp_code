@@ -27,9 +27,9 @@ class CheckableListWidget(QWidget):
         layout.addWidget(self.list_widget)
 
         # Select All Button
-        select_button = QPushButton("Select All")
-        select_button.clicked.connect(self.select_all)
-        layout.addWidget(select_button)
+        self.select_button = QPushButton("Select All")
+        self.select_button.clicked.connect(self.select_all)
+        layout.addWidget(self.select_button)
 
         # Print Selected Button
         print_button = QPushButton("Print Selected")
@@ -57,12 +57,27 @@ class CheckableListWidget(QWidget):
                 self.list_widget.setItemWidget(list_item, checkbox)
 
     def select_all(self):
-        self.checked_items.clear()  # Clear stored checked items
+        all_checked = True
         for i in range(self.list_widget.count()):
             item = self.list_widget.item(i)
             widget = self.list_widget.itemWidget(item)
-            widget.setChecked(True)
-            self.checked_items.add(widget.text())  # Add checked item to stored checked items
+            if not widget.isChecked():
+                all_checked = False
+                break
+        if all_checked:
+            for i in range(self.list_widget.count()):
+                item = self.list_widget.item(i)
+                widget = self.list_widget.itemWidget(item)
+                widget.setChecked(False)
+            self.checked_items.clear()
+            self.select_button.setText("Select All")
+        else:
+            for i in range(self.list_widget.count()):
+                item = self.list_widget.item(i)
+                widget = self.list_widget.itemWidget(item)
+                widget.setChecked(True)
+                self.checked_items.add(widget.text())
+            self.select_button.setText("Unselect All")
 
     def print_selected(self):
         selected_items = []
