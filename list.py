@@ -30,6 +30,26 @@ class CheckableListModel(QAbstractListModel):
         return Qt.ItemIsEnabled | Qt.ItemIsUserCheckable | Qt.ItemIsSelectable
 
 
+class CheckableItemDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        checked = index.data(Qt.CheckStateRole) == Qt.Checked
+        checkbox_rect = option.rect.adjusted(5, 0, -5, 0)
+        super().paint(painter, option, index)
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(Qt.white if option.state & QStyle.State_Selected else option.palette.base())
+        painter.drawRect(checkbox_rect)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setBrush(Qt.black if checked else Qt.lightGray)
+        painter.drawRoundedRect(checkbox_rect.adjusted(2, 2, -2, -2), 3, 3)
+
+    def editorEvent(self, event, model, option, index):
+        if event.type() == QEvent.MouseButtonRelease and event.button() == Qt.LeftButton:
+            if option.rect.adjusted(5, 0, -5, 0).contains(event.pos()):
+                model.setData(index, Qt.Checked if model.data(index, Qt.CheckStateRole) == Qt.Unchecked else Qt.Unchecked, Qt.CheckStateRole)
+                return True
+        return super().editorEvent(event, model, option, index)
+
+
 class CheckableListWidget(QWidget):
     def __init__(self, items):
         super().__init__()
@@ -49,6 +69,7 @@ class CheckableListWidget(QWidget):
         # List Box
         self.list_view = QListView()
         self.list_view.setModel(self.model)
+        self.list_view.setItemDelegate(CheckableItemDelegate())
         self.list_view.setEditTriggers(QListView.NoEditTriggers)
         layout.addLayout(search_layout)
         layout.addWidget(self.list_view)
