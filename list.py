@@ -1,6 +1,6 @@
 import sys
 from PySide6.QtCore import Qt, QAbstractListModel, QModelIndex
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QListView, QLineEdit, QPushButton
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QListView, QLineEdit, QPushButton, QCheckBox
 
 
 class CheckableListModel(QAbstractListModel):
