@@ -24,7 +24,7 @@ class CheckableListModel(QAbstractListModel):
             self.checked_items[self.filtered_indices[index.row()]] = value == Qt.Checked
             self.dataChanged.emit(index, index, [role])
             return True
-        return False
+        return super().setData(index, value, role)
 
     def flags(self, index):
         return Qt.ItemIsEnabled | Qt.ItemIsUserCheckable | Qt.ItemIsSelectable
