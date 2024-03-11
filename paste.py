@@ -81,6 +81,27 @@ def paste(self, text, top_left_index):
         columns = row_text.split('\t')
         for j, column_text in enumerate(columns):
             if i < len(rows) and j < len(columns):
+                index = self.
+                
+def paste(self, text, top_left_index):
+    rows = text.split('\n')
+    num_rows = len(rows)
+    num_columns = 0
+    
+    # Determine the number of columns in the pasted data
+    for row_text in rows:
+        columns = row_text.split('\t')
+        num_columns = max(num_columns, len(columns))
+    
+    # Ensure the model has enough rows and columns to accommodate the pasted data
+    self.insertRows(top_left_index.row(), num_rows)
+    self.insertColumns(top_left_index.column(), num_columns)
+    
+    # Paste the data
+    for i, row_text in enumerate(rows):
+        columns = row_text.split('\t')
+        for j, column_text in enumerate(columns):
+            if i < len(rows) and j < len(columns):
                 index = self.index(top_left_index.row() + i, top_left_index.column() + j)
                 try:
                     # Try to convert the text to a float
