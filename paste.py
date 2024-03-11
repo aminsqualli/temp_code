@@ -38,10 +38,6 @@ class CustomTableModel(QtCore.QAbstractTableModel):
         return False
 
 class MyTableView(QtWidgets.QTableView):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setEditTriggers(QtWidgets.QAbstractItemView.DoubleClicked | QtWidgets.QAbstractItemView.EditKeyPressed)
-
     def paste(self):
         clipboard = QtWidgets.QApplication.clipboard()
         mime_data = clipboard.mimeData()
@@ -51,27 +47,35 @@ class MyTableView(QtWidgets.QTableView):
             rows = text.split('\n')
             selected_indexes = self.selectedIndexes()
 
-            # Get the top-left index of the selection
             if selected_indexes:
                 top_left_index = selected_indexes[0]
-                row = top_left_index.row()
-                column = top_left_index.column()
 
                 for i, row_text in enumerate(rows):
                     columns = row_text.split('\t')
                     for j, column_text in enumerate(columns):
                         if i < len(selected_indexes) and j < len(columns):
-                            index = self.model().index(row + i, column + j)
+                            index = self.model().index(top_left_index.row() + i, top_left_index.column() + j)
                             self.model().setData(index, column_text)
 
 def main():
     app = QtWidgets.QApplication([])
-    data = [[None] * 5 for _ in range(5)]  # Example data
+    data = [[''] * 5 for _ in range(5)]  # Example data
     headers = ['Column {}'.format(i) for i in range(5)]  # Example headers
     model = CustomTableModel(data, headers)
     table_view = MyTableView()
     table_view.setModel(model)
-    table_view.show()
+
+    # Create main window and set the table view as central widget
+    main_window = QtWidgets.QMainWindow()
+    main_window.setCentralWidget(table_view)
+
+    # Add paste action to main window
+    paste_action = QtWidgets.QAction("Paste", main_window)
+    paste_action.setShortcut(QtGui.QKeySequence.Paste)
+    paste_action.triggered.connect(table_view.paste)
+    main_window.addAction(paste_action)
+
+    main_window.show()
     app.exec_()
 
 if __name__ == '__main__':
