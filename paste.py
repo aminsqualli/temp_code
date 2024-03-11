@@ -74,3 +74,18 @@ def main():
 
 if __name__ == '__main__':
     main()
+    
+def paste(self, text, top_left_index):
+    rows = text.split('\n')
+    for i, row_text in enumerate(rows):
+        columns = row_text.split('\t')
+        for j, column_text in enumerate(columns):
+            if i < len(rows) and j < len(columns):
+                index = self.index(top_left_index.row() + i, top_left_index.column() + j)
+                try:
+                    # Try to convert the text to a float
+                    value = float(column_text)
+                    self.setData(index, value)
+                except ValueError:
+                    # If conversion fails, set the data as text
+                    self.setData(index, column_text)
