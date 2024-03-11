@@ -53,9 +53,9 @@ class MyTableView(QtWidgets.QTableView):
                 for i, row_text in enumerate(rows):
                     columns = row_text.split('\t')
                     for j, column_text in enumerate(columns):
-                        if i < len(selected_indexes) and j < len(columns):
+                        if i < len(rows) and j < len(columns):
                             index = self.model().index(top_left_index.row() + i, top_left_index.column() + j)
-                            self.model().setData(index, column_text)
+                            self.model().setData(index, columns[j])
 
 def main():
     app = QtWidgets.QApplication([])
