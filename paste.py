@@ -1,5 +1,3 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-
 class CustomTableModel(QtCore.QAbstractTableModel):
     def __init__(self, data, headers, parent=None):
         super().__init__(parent)
@@ -37,32 +35,21 @@ class CustomTableModel(QtCore.QAbstractTableModel):
             return True
         return False
 
-class MyTableView(QtWidgets.QTableView):
-    def paste(self):
-        clipboard = QtWidgets.QApplication.clipboard()
-        mime_data = clipboard.mimeData()
-
-        if mime_data.hasText():
-            text = mime_data.text()
-            rows = text.split('\n')
-            selected_indexes = self.selectedIndexes()
-
-            if selected_indexes:
-                top_left_index = selected_indexes[0]
-
-                for i, row_text in enumerate(rows):
-                    columns = row_text.split('\t')
-                    for j, column_text in enumerate(columns):
-                        if i < len(rows) and j < len(columns):
-                            index = self.model().index(top_left_index.row() + i, top_left_index.column() + j)
-                            self.model().setData(index, columns[j])
+    def paste(self, text, top_left_index):
+        rows = text.split('\n')
+        for i, row_text in enumerate(rows):
+            columns = row_text.split('\t')
+            for j, column_text in enumerate(columns):
+                if i < len(rows) and j < len(columns):
+                    index = self.index(top_left_index.row() + i, top_left_index.column() + j)
+                    self.setData(index, column_text)
 
 def main():
     app = QtWidgets.QApplication([])
     data = [[''] * 5 for _ in range(5)]  # Example data
     headers = ['Column {}'.format(i) for i in range(5)]  # Example headers
     model = CustomTableModel(data, headers)
-    table_view = MyTableView()
+    table_view = QtWidgets.QTableView()
     table_view.setModel(model)
 
     # Create main window and set the table view as central widget
@@ -70,9 +57,16 @@ def main():
     main_window.setCentralWidget(table_view)
 
     # Add paste action to main window
+    def handle_paste():
+        clipboard = QtWidgets.QApplication.clipboard()
+        mime_data = clipboard.mimeData()
+        if mime_data.hasText():
+            top_left_index = table_view.currentIndex()
+            model.paste(mime_data.text(), top_left_index)
+
     paste_action = QtWidgets.QAction("Paste", main_window)
     paste_action.setShortcut(QtGui.QKeySequence.Paste)
-    paste_action.triggered.connect(table_view.paste)
+    paste_action.triggered.connect(handle_paste)
     main_window.addAction(paste_action)
 
     main_window.show()
