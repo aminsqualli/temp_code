@@ -9,15 +9,22 @@ batch_size = 100
 start_index = 0
 while True:
     # Get emails in the current batch
-    batch_emails = inbox.Items[start_index:start_index + batch_size]
-
-    # Process current batch
-    for email in batch_emails:
+    batch = inbox.Items
+    batch.Sort("[ReceivedTime]", True)  # Sort by ReceivedTime in descending order
+    batch = batch.Restrict("[ReceivedTime] >= '01/01/2024'")  # Adjust the date as needed
+    batch = batch.GetFirst()
+    for _ in range(start_index, start_index + batch_size):
+        if not batch:
+            break
         # Process each email as needed
-        pass
+        print("Subject:", batch.Subject)
+        print("Sender:", batch.SenderName)
+        print("Received Time:", batch.ReceivedTime)
+        print("-------------------")
+        batch = batch.GetNext()
 
     # Check if there are more emails to process
-    if len(batch_emails) < batch_size:
+    if not batch:
         break
 
     start_index += batch_size
