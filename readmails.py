@@ -14,17 +14,15 @@ while start_index < total_emails:
     batch = inbox.Items.Sort("[ReceivedTime]", True)
     batch = batch[start_index:start_index + batch_size]
 
-    # Check if the batch is empty
-    if not batch:
-        break
-
-    # Process each email in the batch
-    for email in batch:
-        # Process each email as needed
-        print("Subject:", email.Subject)
-        print("Sender:", email.SenderName)
-        print("Received Time:", email.ReceivedTime)
-        print("-------------------")
+    # Check if the batch is not None
+    if batch is not None:
+        # Process each email in the batch
+        for email in batch:
+            # Process each email as needed
+            print("Subject:", email.Subject)
+            print("Sender:", email.SenderName)
+            print("Received Time:", email.ReceivedTime)
+            print("-------------------")
 
     # Update start index for the next batch
     start_index += batch_size
