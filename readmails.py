@@ -7,24 +7,21 @@ inbox = outlook.GetDefaultFolder(6)  # "6" refers to the Inbox folder
 # Process emails in batches
 batch_size = 100
 start_index = 0
-while True:
+total_emails = inbox.Items.Count
+
+while start_index < total_emails:
     # Get emails in the current batch
-    batch = inbox.Items
-    batch.Sort("[ReceivedTime]", True)  # Sort by ReceivedTime in descending order
+    batch = inbox.Items.Sort("[ReceivedTime]", True)
     batch = batch.Restrict("[ReceivedTime] >= '01/01/2024'")  # Adjust the date as needed
-    batch = batch.GetFirst()
-    for _ in range(start_index, start_index + batch_size):
-        if not batch:
-            break
+    batch = batch[start_index:start_index + batch_size]
+
+    # Process each email in the batch
+    for email in batch:
         # Process each email as needed
-        print("Subject:", batch.Subject)
-        print("Sender:", batch.SenderName)
-        print("Received Time:", batch.ReceivedTime)
+        print("Subject:", email.Subject)
+        print("Sender:", email.SenderName)
+        print("Received Time:", email.ReceivedTime)
         print("-------------------")
-        batch = batch.GetNext()
 
-    # Check if there are more emails to process
-    if not batch:
-        break
-
+    # Update start index for the next batch
     start_index += batch_size
