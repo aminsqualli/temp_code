@@ -21,7 +21,7 @@ start_of_day_utc = start_of_day_ny.astimezone(pytz.utc)
 # Format the date string with the adjusted start of the day in UTC
 date_string = start_of_day_utc.strftime('%m/%d/%Y %H:%M:%S')
 
-# Get emails received today
+# Get emails received today in New York time zone
 received_today = inbox.Items.Restrict("[ReceivedTime] >= '" + date_string + "'")
 
 # Print subject and sender of each email received today
