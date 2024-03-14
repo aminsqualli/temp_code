@@ -1,22 +1,23 @@
 import win32com.client
-import datetime
 
 # Connect to Outlook
 outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
 inbox = outlook.GetDefaultFolder(6)  # "6" refers to the Inbox folder
 
-# Get today's date
-today = datetime.datetime.today()
+# Process emails in batches
+batch_size = 100
+start_index = 0
+while True:
+    # Get emails in the current batch
+    batch_emails = inbox.Items[start_index:start_index + batch_size]
 
-# Get all emails from the inbox
-all_emails = inbox.Items
+    # Process current batch
+    for email in batch_emails:
+        # Process each email as needed
+        pass
 
-# Filter emails received today
-received_today = [email for email in all_emails if email.Class == 43 and email.ReceivedTime.date() == today.date()]
+    # Check if there are more emails to process
+    if len(batch_emails) < batch_size:
+        break
 
-# Print subject and sender of each email received today
-for email in received_today:
-    print("Subject:", email.Subject)
-    print("Sender:", email.SenderName)
-    print("Received Time:", email.ReceivedTime)
-    print("-------------------")
+    start_index += batch_size
