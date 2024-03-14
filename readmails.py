@@ -6,18 +6,20 @@ import pytz
 outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
 inbox = outlook.GetDefaultFolder(6)  # "6" refers to the Inbox folder
 
-# Get today's date
-today = datetime.datetime.today()
+# Define New York time zone
+ny_timezone = pytz.timezone('America/New_York')
 
-# Set the time zone to the local time zone
-local_timezone = pytz.timezone('YOUR_TIMEZONE')  # Replace 'YOUR_TIMEZONE' with your local time zone
-today_local = datetime.datetime.now(local_timezone)
+# Get today's date in New York time zone
+today_ny = datetime.datetime.now(ny_timezone)
 
-# Get the start of the day in the local time zone
-start_of_day_local = today_local.replace(hour=0, minute=0, second=0, microsecond=0)
+# Get the start of the day in New York time zone
+start_of_day_ny = today_ny.replace(hour=0, minute=0, second=0, microsecond=0)
 
-# Format the date string with the adjusted start of the day
-date_string = start_of_day_local.strftime('%m/%d/%Y %H:%M:%S')
+# Convert New York start of the day to UTC
+start_of_day_utc = start_of_day_ny.astimezone(pytz.utc)
+
+# Format the date string with the adjusted start of the day in UTC
+date_string = start_of_day_utc.strftime('%m/%d/%Y %H:%M:%S')
 
 # Get emails received today
 received_today = inbox.Items.Restrict("[ReceivedTime] >= '" + date_string + "'")
