@@ -1,28 +1,18 @@
 import win32com.client
 import datetime
-import pytz
 
 # Connect to Outlook
 outlook = win32com.client.Dispatch("Outlook.Application").GetNamespace("MAPI")
 inbox = outlook.GetDefaultFolder(6)  # "6" refers to the Inbox folder
 
-# Define New York time zone
-ny_timezone = pytz.timezone('America/New_York')
+# Get today's date
+today = datetime.datetime.today()
 
-# Get today's date in New York time zone
-today_ny = datetime.datetime.now(ny_timezone)
+# Get all emails from the inbox
+all_emails = inbox.Items
 
-# Get the start of the day in New York time zone
-start_of_day_ny = today_ny.replace(hour=0, minute=0, second=0, microsecond=0)
-
-# Convert New York start of the day to UTC
-start_of_day_utc = start_of_day_ny.astimezone(pytz.utc)
-
-# Format the date string with the adjusted start of the day in UTC
-date_string = start_of_day_utc.strftime('%m/%d/%Y %H:%M:%S')
-
-# Get emails received today in New York time zone
-received_today = inbox.Items.Restrict("[ReceivedTime] >= '" + date_string + "'")
+# Filter emails received today
+received_today = [email for email in all_emails if email.Class == 43 and email.ReceivedTime.date() == today.date()]
 
 # Print subject and sender of each email received today
 for email in received_today:
