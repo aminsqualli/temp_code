@@ -12,8 +12,11 @@ total_emails = inbox.Items.Count
 while start_index < total_emails:
     # Get emails in the current batch
     batch = inbox.Items.Sort("[ReceivedTime]", True)
-    batch = batch.Restrict("[ReceivedTime] >= '01/01/2024'")  # Adjust the date as needed
     batch = batch[start_index:start_index + batch_size]
+
+    # Check if the batch is empty
+    if not batch:
+        break
 
     # Process each email in the batch
     for email in batch:
