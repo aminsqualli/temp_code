@@ -1,6 +1,5 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QTableView, QApplication
-from PyQt6.QtGui import QKeySequence
 
 
 class CustomTableView(QTableView):
@@ -9,7 +8,10 @@ class CustomTableView(QTableView):
             indexes = self.selectedIndexes()
             if indexes:
                 index = indexes[0]
-                self.model().setData(index, "", Qt.ItemDataRole.EditRole)
+                model = self.model()
+                model.setData(index, "", Qt.ItemDataRole.EditRole)
+                # Commit the data to force immediate update
+                self.closeEditor(self.currentEditor(), QTableView.EditTrigger.NoEditTriggers)
         else:
             super().keyPressEvent(event)
 
