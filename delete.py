@@ -1,19 +1,19 @@
 from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QTableView, QApplication
+from PyQt6.QtWidgets import QTableView, QApplication, QStyledItemDelegate
 
 
-class CustomTableView(QTableView):
-    def keyPressEvent(self, event):
-        if event.key() == Qt.Key.Backspace:
-            indexes = self.selectedIndexes()
-            if indexes:
-                index = indexes[0]
-                model = self.model()
-                model.setData(index, "", Qt.ItemDataRole.EditRole)
-                # Commit the data to force immediate update
-                self.closeEditor(self.currentEditor(), QTableView.EditTrigger.NoEditTriggers)
-        else:
-            super().keyPressEvent(event)
+class CustomDelegate(QStyledItemDelegate):
+    def createEditor(self, parent, option, index):
+        editor = super().createEditor(parent, option, index)
+        if editor:
+            editor.installEventFilter(self)
+        return editor
+
+    def eventFilter(self, editor, event):
+        if event.type() == event.KeyPress and event.key() == Qt.Key.Backspace:
+            editor.clear()
+            return True
+        return super().eventFilter(editor, event)
 
 
 if __name__ == "__main__":
@@ -53,7 +53,9 @@ if __name__ == "__main__":
     data = [[f"Row {i}, Col {j}" for j in range(3)] for i in range(4)]
     headers = ["Column 1", "Column 2", "Column 3"]
     model = CustomTableModel(data, headers)
-    view = CustomTableView()
+    view = QTableView()
     view.setModel(model)
+    delegate = CustomDelegate()
+    view.setItemDelegate(delegate)
     view.show()
     sys.exit(app.exec())
