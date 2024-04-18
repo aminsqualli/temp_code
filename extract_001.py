@@ -1,23 +1,28 @@
 import pandas as pd
+import re
 
 # Sample list of strings
 data_list = ['cusip="67372" isin="63727282" symbol="AAPL"',
-             'cusip="12345" isin="98765432" symbol="GOOG"']
+             'cusip="12345" isin="98765432" symbol="GOOG"',
+             'cusip="54321" isin="this is the isin" symbol="MSFT"']
 
 # Initialize lists to store extracted values
 cusips = []
 isins = []
 symbols = []
 
-# Parse each string in the list and extract values
+# Define regular expression pattern to extract values
+pattern = r'cusip="([^"]*)" isin="([^"]*)" symbol="([^"]*)"'
+
+# Parse each string in the list and extract values using regular expressions
 for item in data_list:
-    parts = item.split()  # Split the string into parts
-    cusip = parts[0].split('=')[1].strip('"')  # Extract cusip value
-    isin = parts[1].split('=')[1].strip('"')   # Extract isin value
-    symbol = parts[2].split('=')[1].strip('"') # Extract symbol value
-    cusips.append(cusip)
-    isins.append(isin)
-    symbols.append(symbol)
+    match = re.match(pattern, item)
+    if match:
+        cusips.append(match.group(1))
+        isins.append(match.group(2))
+        symbols.append(match.group(3))
+    else:
+        print(f"Failed to parse string: {item}")
 
 # Create DataFrame from the extracted values
 df = pd.DataFrame({'cusip': cusips, 'isin': isins, 'symbol': symbols})
