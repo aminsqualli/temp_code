@@ -4,7 +4,7 @@ import re
 # Sample list of strings
 data_list = ['cusip="67372" isin="63727282" symbol="AAPL"',
              'cusip="12345" isin="98765432" symbol="GOOG"',
-             'cusip="54321" isin="this is the isin" symbol="MSFT"']
+             'isin="98765433" symbol="MSFT"']
 
 # Initialize lists to store extracted values
 cusips = []
@@ -18,7 +18,7 @@ pattern = r'cusip="([^"]*)" isin="([^"]*)" symbol="([^"]*)"'
 for item in data_list:
     match = re.match(pattern, item)
     if match:
-        cusips.append(match.group(1))
+        cusips.append(match.group(1) if match.group(1) else 'N/A')  # Set default value if 'cusip' is missing
         isins.append(match.group(2))
         symbols.append(match.group(3))
     else:
