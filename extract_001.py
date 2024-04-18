@@ -12,7 +12,7 @@ isins = []
 symbols = []
 
 # Define regular expression pattern to extract values
-pattern = r'cusip="([^"]*)" isin="([^"]*)" symbol="([^"]*)"'
+pattern = r'(?:(?:cusip="([^"]*)")?\s+)?isin="([^"]*)" symbol="([^"]*)"'
 
 # Parse each string in the list and extract values using regular expressions
 for item in data_list:
