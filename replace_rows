@@ -14,23 +14,11 @@ data2 = {
 }
 df2 = pd.DataFrame(data2)
 
-# Filtrer les lignes contenant "EUR"
-df_eur = df1[df1['devise'] == 'EUR']
+# Créer un dictionnaire de mapping des taux de change
+taux_de_change_mapping = dict(zip(df2['devise'], df2['taux_de_change']))
 
-# Fusionner avec le deuxième DataFrame basé sur la colonne "devise"
-df_merged = pd.merge(df_eur, df2, on='devise', suffixes=('_df1', '_df2'))
-
-# Sélectionner les colonnes nécessaires (vous pouvez ajuster selon vos besoins)
-df_merged = df_merged[['devise', 'taux_de_change_df1', 'taux_de_change_df2']]
-
-# Renommer les colonnes pour plus de clarté (optionnel)
-df_merged.rename(columns={'taux_de_change_df1': 'taux_de_change_df1', 'taux_de_change_df2': 'taux_de_change_df2'}, inplace=True)
-
-# Récupérer les lignes qui ne contiennent pas "EUR" du DataFrame principal
-df_non_eur = df1[df1['devise'] != 'EUR']
-
-# Combiner les résultats fusionnés avec les lignes non "EUR"
-df_final = pd.concat([df_non_eur, df_merged], ignore_index=True)
+# Remplacer les valeurs de taux_de_change dans df1 en utilisant map
+df1['taux_de_change'] = df1['devise'].map(taux_de_change_mapping).fillna(df1['taux_de_change'])
 
 # Afficher le DataFrame final
-print(df_final)
+print(df1)
